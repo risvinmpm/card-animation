@@ -1,15 +1,42 @@
 "use client";
 
 import { useRef } from "react";
-import Card from "./components/Card";
 import ReactLenis from "@studio-freight/react-lenis";
 import gsap from "gsap";
 import ScrollTrigger from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
+import Card from "./components/Card";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function Home() {
+const flipCardsData = [
+  {
+    frontTitle: "Regulatory Compliance",
+    backText:
+      "Dubai’s Virtual Asset Regulatory Authority (VARA) ensures safety and transparency. B2NES adheres to these standards, so you can trade with confidence.",
+    icon: "/card1.png",
+  },
+  {
+    frontTitle: "Tax Benefits",
+    backText:
+      "Operating in Dubai’s free zones means no corporate tax and easy profit transfers, helping you maximize your earnings.",
+    icon: "/card2.png",
+  },
+  {
+    frontTitle: "Enhanced Security",
+    backText:
+      "Unlicensed platforms carry risks. B2NES uses MFA, encryption, and constant monitoring to keep your assets secure.",
+    icon: "/card3.png",
+  },
+  {
+    frontTitle: "Market Access",
+    backText:
+      "Dubai is a global crypto hub. B2NES connects you to this vibrant market, opening doors to new opportunities.",
+    icon: "/card4.png",
+  },
+];
+
+export default function Advantage() {
   const container = useRef(null);
   const cardRefs = useRef([]);
 
@@ -22,7 +49,7 @@ export default function Home() {
     ScrollTrigger.create({
       trigger: ".card-stack-wrapper",
       start: "top top",
-      end: () => `+=${totalScrollHeight}`,
+      end: `+=${totalScrollHeight}`,
       pin: true,
       scrub: true,
     });
@@ -31,7 +58,6 @@ export default function Home() {
       const frontEl = card.querySelector(".flip-card-front");
       const backEl = card.querySelector(".flip-card-back");
 
-      // ✅ Ensure correct initial render
       gsap.set(frontEl, { rotateY: 0 });
       gsap.set(backEl, { rotateY: 180 });
 
@@ -42,7 +68,7 @@ export default function Home() {
         scrollTrigger: {
           trigger: card,
           start: "top center",
-          end: () => `+=${window.innerHeight}`,
+          end: `+=${window.innerHeight}`,
           scrub: 0.5,
         },
       });
@@ -54,15 +80,14 @@ export default function Home() {
       ScrollTrigger.create({
         trigger: container.current.querySelector(".card-stack-wrapper"),
         start: "top top",
-        end: () => `+=${totalScrollHeight}`,
+        end: `+=${totalScrollHeight}`,
         scrub: 1,
-        id: `rotate-flip-${index}`,
         onUpdate: (self) => {
           const progress = self.progress;
 
-          // ✅ Apply flip only between startOffset and endOffset
           if (progress >= startOffset && progress <= endOffset) {
-            const animationProgress = (progress - startOffset) / (endOffset - startOffset);
+            const animationProgress =
+              (progress - startOffset) / (endOffset - startOffset);
             const frontRotation = -180 * animationProgress;
             const backRotation = 180 - 180 * animationProgress;
             const cardRotation = rotations[index] * (1 - animationProgress);
@@ -75,11 +100,9 @@ export default function Home() {
               rotate: cardRotation,
             });
           } else if (progress < startOffset) {
-            // ✅ Ensure it stays front-facing before flip starts
             gsap.set(frontEl, { rotateY: 0 });
             gsap.set(backEl, { rotateY: 180 });
           } else if (progress > endOffset) {
-            // ✅ After full flip
             gsap.set(frontEl, { rotateY: -180 });
             gsap.set(backEl, { rotateY: 0 });
           }
@@ -92,24 +115,32 @@ export default function Home() {
     <ReactLenis root>
       <div className="container" ref={container}>
         <section className="hero">
-          <h1>keep scrolling to <br /> reveal the cards</h1>
+          <h1>
+            Trade Smarter with a Licensed Platform <br /> – The B2NES Advantage
+          </h1>
         </section>
 
         <section className="card-stack-wrapper">
-          {[...Array(4)].map((_, index) => (
+          {flipCardsData.map((card, index) => (
             <Card
               key={index}
               id={`card-${index + 1}`}
-              frontSrc="/window.svg"
-              frontAlt="card image"
-              backText="your card details appear here"
+              frontTitle={card.frontTitle}
+              frontSrc={card.icon}
+              frontAlt={card.frontTitle}
+              backText={card.backText}
               ref={(el) => (cardRefs.current[index] = el)}
             />
           ))}
         </section>
 
         <section className="footer">
-          <h1>Footer or upcoming section</h1>
+          <h1>
+            Dubai’s crypto market offers immense potential, but choosing the
+            right platform is key to success.
+            <br />
+            Here’s why a licensed platform like B2NES gives you the edge.
+          </h1>
         </section>
       </div>
     </ReactLenis>
