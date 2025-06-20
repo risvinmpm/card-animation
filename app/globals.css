@@ -72,21 +72,21 @@ h1 {
   animation: floating 3s infinite ease-in-out;
 }
 
-/* #card-1 .card-wrapper {
+#cards-1 .card-wrapper {
     animation-delay: 0;
 }
 
-#card-2 .card-wrapper {
+#cards-2 .card-wrapper {
     animation-delay: 0.2s;
 }
 
-#card-3 .card-wrapper {
+#cards-3 .card-wrapper {
     animation-delay: 0.4s;
 }
 
-#card-4 .card-wrapper {
+#cards-4 .card-wrapper {
     animation-delay: 0.6s;
-} */
+}
 
 /* #card-5 .card-wrapper {
     animation-delay: 0.8s;
