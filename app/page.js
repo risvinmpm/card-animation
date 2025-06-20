@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Card from "./components/Card";
 import ReactLenis from "@studio-freight/react-lenis";
 import gsap from "gsap";
@@ -19,7 +19,6 @@ export default function Home() {
     const positions = [14, 38, 62, 86];
     const rotations = [-15, -7.5, 7.5, 15];
 
-    // Pin the wrapper that contains the card stack
     ScrollTrigger.create({
       trigger: ".card-stack-wrapper",
       start: "top top",
@@ -29,6 +28,13 @@ export default function Home() {
     });
 
     cards.forEach((card, index) => {
+      const frontEl = card.querySelector(".flip-card-front");
+      const backEl = card.querySelector(".flip-card-back");
+
+      // ✅ Ensure correct initial render
+      gsap.set(frontEl, { rotateY: 0 });
+      gsap.set(backEl, { rotateY: 180 });
+
       gsap.to(card, {
         left: `${positions[index]}%`,
         rotation: rotations[index],
@@ -40,46 +46,46 @@ export default function Home() {
           scrub: 0.5,
         },
       });
-    });
-
-    cards.forEach((cards, index)=>{
-      const frontEl = cards.querySelector(".flip-card-front");
-      const backEl = cards.querySelector(".flip-card-back");
 
       const staggerOffset = index * 0.05;
       const startOffset = 1 / 3 + staggerOffset;
       const endOffset = 2 / 3 + staggerOffset;
 
-
       ScrollTrigger.create({
-        trigger: container.current.querySelector(".cards"),
+        trigger: container.current.querySelector(".card-stack-wrapper"),
         start: "top top",
         end: () => `+=${totalScrollHeight}`,
         scrub: 1,
         id: `rotate-flip-${index}`,
         onUpdate: (self) => {
           const progress = self.progress;
-          if(progress >= staggerOffset && progress <= endOffset) {
-            const animationProgress = (progress - startOffset) / ( 1 / 3 );
+
+          // ✅ Apply flip only between startOffset and endOffset
+          if (progress >= startOffset && progress <= endOffset) {
+            const animationProgress = (progress - startOffset) / (endOffset - startOffset);
             const frontRotation = -180 * animationProgress;
             const backRotation = 180 - 180 * animationProgress;
-            const cardRotation = rotations[index] * ( 1 - animationProgress );
+            const cardRotation = rotations[index] * (1 - animationProgress);
 
-
-            gsap.to(frontEl, { rotateY: frontRotation, ease: "power1.out"});
-            gsap.to(backEl, { rotateY: backRotation, ease: "power1.out"});
-            gsap.to(cards, {
+            gsap.set(frontEl, { rotateY: frontRotation });
+            gsap.set(backEl, { rotateY: backRotation });
+            gsap.set(card, {
               xPercent: -50,
               yPercent: -50,
               rotate: cardRotation,
-              ease: "power1.out"
-            })
+            });
+          } else if (progress < startOffset) {
+            // ✅ Ensure it stays front-facing before flip starts
+            gsap.set(frontEl, { rotateY: 0 });
+            gsap.set(backEl, { rotateY: 180 });
+          } else if (progress > endOffset) {
+            // ✅ After full flip
+            gsap.set(frontEl, { rotateY: -180 });
+            gsap.set(backEl, { rotateY: 0 });
           }
-        }
-      })
+        },
+      });
     });
-    
-
   }, { scope: container });
 
   return (
